@@ -16,7 +16,7 @@ const socials = [
   },
   {
     icon: faGithub,
-    url: "https://github.com",
+    url: "https://github.com/casperyap/meta_advanced_react_labs",
   },
   {
     icon: faLinkedin,
