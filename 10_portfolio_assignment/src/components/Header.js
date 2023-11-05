@@ -11,28 +11,37 @@ import { Box, HStack } from "@chakra-ui/react";
 
 const socials = [
   {
+    key: "EMail",
     icon: faEnvelope,
     url: "mailto: casyap@gmail.com",
   },
   {
+    key: "GitHub",
     icon: faGithub,
     url: "https://github.com/casperyap/meta_advanced_react_labs",
   },
   {
+    key: "LinkedIn",
     icon: faLinkedin,
     url: "https://www.linkedin.com/in/casper-yap-09677468/",
   },
   {
+    key: "Medium",
     icon: faMedium,
     url: "https://medium.com",
   },
   {
+    key: "StackOverflow",
     icon: faStackOverflow,
     url: "https://stackoverflow.com",
   },
 ];
 
 const Header = () => {
+
+  const headerRef = useRef();
+  const scrollVal = useRef();
+
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -44,6 +53,27 @@ const Header = () => {
     }
   };
 
+  useEffect(() => {   
+    const handleScroll = (event) => {
+      // console.log(window.scrollY);
+      
+      if (window.scrollY > scrollVal.prev){
+        headerRef.current.style.transform = "translateY(-200px)"
+      }
+      else {
+        headerRef.current.style.transform = "translateY(0)"
+      }
+      
+      scrollVal.prev = window.scrollY
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }; 
+  }, []);
+
   return (
     <Box
       position="fixed"
@@ -52,9 +82,10 @@ const Header = () => {
       right={0}
       translateY={0}
       transitionProperty="transform"
-      transitionDuration=".3s"
+      transitionDuration="1s"
       transitionTimingFunction="ease-in-out"
       backgroundColor="#18181b"
+      ref={headerRef}
     >
       <Box color="white" maxWidth="1280px" margin="0 auto">
         <HStack
@@ -69,7 +100,7 @@ const Header = () => {
             {
               socials.map(social => {
                 return (            
-                    <div>
+                    <div key={social.key}>
                       <a href={social.url}>
                         <FontAwesomeIcon icon={social.icon} size="2x" />
                       </a>

@@ -21,13 +21,30 @@ const LandingSection = () => {
   const {isLoading, response, submit} = useSubmit();
   const { onOpen } = useAlertContext();
 
+  useEffect(() => {
+    if (response){
+      onOpen(response.type, response.message);
+    }    
+  }, [response])
+
   const formik = useFormik({
-    initialValues: {},
-    onSubmit: (values) => {},
-    validationSchema: Yup.object({}),
+    initialValues: {
+      firstName: "",
+      email: "",
+      type: "hireMe",
+      comment: ""
+    },
+    onSubmit: (values) => {
+      submit('', values);
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string().required(),
+      email: Yup.string().email().required(),
+      comment: Yup.string().required(),
+    }),
   });
 
-  return (
+  return ( 
     <FullScreenSection
       isDarkBackground
       backgroundColor="#512DA8"
@@ -39,28 +56,40 @@ const LandingSection = () => {
           Contact me
         </Heading>
         <Box p={6} rounded="md" w="100%">
-          <form>
+          <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4}>
-              <FormControl isInvalid={false}>
+              <FormControl isInvalid={formik.errors.firstName && formik.touched.firstName}>
                 <FormLabel htmlFor="firstName">Name</FormLabel>
                 <Input
                   id="firstName"
                   name="firstName"
+                  onChange={formik.handleChange}
+                  value={formik.values.firstName}
+                  {...formik.getFieldProps("firstName")}
                 />
-                <FormErrorMessage></FormErrorMessage>
+                <FormErrorMessage>Required.</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={false}>
+              <FormControl isInvalid={formik.errors.email && formik.touched.email}>
                 <FormLabel htmlFor="email">Email Address</FormLabel>
                 <Input
                   id="email"
                   name="email"
                   type="email"
+                  onChange={formik.handleChange}
+                  value={formik.values.email}
+                  {...formik.getFieldProps("email")}
                 />
-                <FormErrorMessage></FormErrorMessage>
+                <FormErrorMessage>Required in correct format.</FormErrorMessage>
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="type">Type of enquiry</FormLabel>
-                <Select id="type" name="type">
+                <Select 
+                  id="type" 
+                  name="type" 
+                  value={formik.values.type}
+                  onChange={formik.handleChange}
+                  {...formik.getFieldProps("type")}
+                >
                   <option value="hireMe">Freelance project proposal</option>
                   <option value="openSource">
                     Open source consultancy session
@@ -68,17 +97,20 @@ const LandingSection = () => {
                   <option value="other">Other</option>
                 </Select>
               </FormControl>
-              <FormControl isInvalid={false}>
+              <FormControl isInvalid={formik.errors.comment && formik.touched.comment}>
                 <FormLabel htmlFor="comment">Your message</FormLabel>
                 <Textarea
                   id="comment"
                   name="comment"
                   height={250}
+                  onChange={formik.handleChange}
+                  value={formik.values.comment}
+                  {...formik.getFieldProps("comment")}
                 />
-                <FormErrorMessage></FormErrorMessage>
+                <FormErrorMessage>Required.</FormErrorMessage>
               </FormControl>
-              <Button type="submit" colorScheme="purple" width="full">
-                Submit
+              <Button type="submit" colorScheme="purple" width="full" isDisabled={isLoading}>
+                {isLoading ?  'Loading' : 'Submit'}
               </Button>
             </VStack>
           </form>
