@@ -24,6 +24,9 @@ const LandingSection = () => {
   useEffect(() => {
     if (response){
       onOpen(response.type, response.message);
+      if (response.type == "success") {
+        formik.resetForm();
+      }
     }    
   }, [response])
 
@@ -38,9 +41,14 @@ const LandingSection = () => {
       submit('', values);
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required(),
-      email: Yup.string().email().required(),
-      comment: Yup.string().required(),
+      firstName: Yup.string().required("Please fill the name field"),
+      email: Yup.string().email().required("Please fill the email field"),
+      type: Yup.string()
+        .oneOf(["hireMe", "openSource", "other"])
+        .required("Please select a valid option"),
+        comment: Yup.string() 
+        .min(25, "Must be at least 25 characters") 
+        .required("Required"), 
     }),
   });
 
@@ -67,7 +75,7 @@ const LandingSection = () => {
                   value={formik.values.firstName}
                   {...formik.getFieldProps("firstName")}
                 />
-                <FormErrorMessage>Required.</FormErrorMessage>
+                <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={formik.errors.email && formik.touched.email}>
                 <FormLabel htmlFor="email">Email Address</FormLabel>
@@ -79,7 +87,7 @@ const LandingSection = () => {
                   value={formik.values.email}
                   {...formik.getFieldProps("email")}
                 />
-                <FormErrorMessage>Required in correct format.</FormErrorMessage>
+                <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="type">Type of enquiry</FormLabel>
@@ -107,10 +115,10 @@ const LandingSection = () => {
                   value={formik.values.comment}
                   {...formik.getFieldProps("comment")}
                 />
-                <FormErrorMessage>Required.</FormErrorMessage>
+                <FormErrorMessage>{formik.errors.comment}</FormErrorMessage>
               </FormControl>
-              <Button type="submit" colorScheme="purple" width="full" isDisabled={isLoading}>
-                {isLoading ?  'Loading' : 'Submit'}
+              <Button type="submit" colorScheme="purple" width="full" isLoading={isLoading}>
+                Submit
               </Button>
             </VStack>
           </form>
